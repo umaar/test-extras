@@ -83,7 +83,7 @@ export interface DispatchOptions {
 }
 
 export interface EventInitializer {
-	(type: string, bubbles: boolean, cancelable: boolean): void;
+	(type: string, bubbles: boolean, cancelable: boolean, detail: any): void;
 }
 
 /**
@@ -103,13 +103,18 @@ export default function dispatchEvent(target: Element, type: string, options?: D
 			event = new ((<any> window)[eventClass] as typeof Event)(type, eventInit);
 		}
 		else {
-			event = new window.CustomEvent(type, eventInit);
+			const { bubbles, cancelable, ...initProps } = eventInit;
+			event = new window.CustomEvent(type, { bubbles, cancelable });
+			assign(event, initProps);
 		}
 	}
 	else {
-		event = document.createEvent(eventClass);
+		/* because the arity varies too greatly to be able to properly call all the event types, we will
+		 * only support CustomEvent for those platforms that don't support event constructors, which is
+		 * essentially IE11 */
+		event = document.createEvent('CustomEvent');
 		const { bubbles = false, cancelable = false, ...initProps } = eventInit;
-		((<any> event)[`init${eventClass}`] as EventInitializer)(type, bubbles, cancelable);
+		(event as CustomEvent).initCustomEvent(type, bubbles, cancelable, {});
 		assign(event, initProps);
 	}
 	if (selector) {

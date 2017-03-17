@@ -2,6 +2,16 @@ import * as registerSuite from 'intern!object';
 import * as assert from 'intern/chai!assert';
 import dispatchEvent from '../../../src/dom/dispatchEvent';
 
+const hasCustomEventConstructor = (() => {
+	try {
+		new window.CustomEvent('foo');
+		return true;
+	}
+	catch (e) {
+		return false;
+	}
+})();
+
 registerSuite({
 	name: 'dom/dispatchEvent',
 
@@ -52,7 +62,12 @@ registerSuite({
 
 		function listener(evt: MouseEvent) {
 			assert.strictEqual(evt.type, 'click', 'event type should be "click"');
-			assert.instanceOf(evt, (<any> window).MouseEvent, 'event should be an instance of MouseEvent');
+			if (hasCustomEventConstructor) {
+				assert.instanceOf(evt, (<any> window).MouseEvent, 'event should be an instance of MouseEvent');
+			}
+			else {
+				assert.instanceOf(evt, (<any> window).CustomEvent, 'event should be an instance of MouseEvent');
+			}
 			assert.strictEqual(evt.clientX, 50);
 			assert.strictEqual(evt.clientY, 50);
 
@@ -71,6 +86,34 @@ registerSuite({
 
 		dispatchEvent(target, 'click', {
 			eventClass: 'MouseEvent',
+			eventInit
+		});
+	},
+
+	'widely unsupported event'() {
+		const target = document.createElement('button');
+		document.body.appendChild(target);
+
+		function listener(evt: any) {
+			assert.strictEqual(evt.type, 'deviceproximity', 'event type should be "deviceproximity"');
+			assert.strictEqual(evt.max, 0);
+			assert.strictEqual(evt.min, 0);
+			assert.strictEqual(evt.value, 0);
+
+			target.removeEventListener('deviceproximity', listener);
+			document.body.removeChild(target);
+		}
+
+		target.addEventListener('deviceproximity', listener);
+
+		const eventInit = {
+			max: 0,
+			min: 0,
+			value: 0
+		};
+
+		dispatchEvent(target, 'deviceproximity', {
+			eventClass: 'DeviceProximityEvent',
 			eventInit
 		});
 	},
