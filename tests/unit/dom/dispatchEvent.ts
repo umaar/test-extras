@@ -20,10 +20,7 @@ registerSuite({
 
 		target.addEventListener('foo', listener);
 
-		dispatchEvent({
-			target,
-			type: 'foo'
-		});
+		dispatchEvent(target, 'foo');
 	},
 
 	'bubbles/cancelable'() {
@@ -41,9 +38,7 @@ registerSuite({
 
 		target.addEventListener('foo', listener);
 
-		dispatchEvent({
-			target,
-			type: 'foo',
+		dispatchEvent(target, 'foo', {
 			eventInit: {
 				bubbles: true,
 				cancelable: true
@@ -74,9 +69,7 @@ registerSuite({
 			clientY: 50
 		};
 
-		dispatchEvent({
-			target,
-			type: 'click',
+		dispatchEvent(target, 'click', {
 			eventClass: 'MouseEvent',
 			eventInit
 		});
@@ -103,10 +96,8 @@ registerSuite({
 		target.addEventListener('foo', wronglistener);
 		button.addEventListener('foo', listener);
 
-		dispatchEvent({
-			selector: 'button',
-			target,
-			type: 'foo'
+		dispatchEvent(target, 'foo', {
+			selector: 'button'
 		});
 	},
 
@@ -115,10 +106,8 @@ registerSuite({
 		document.body.appendChild(target);
 
 		assert.throws(() => {
-			dispatchEvent({
-				selector: 'button',
-				target,
-				type: 'foo'
+			dispatchEvent(target, 'foo', {
+				selector: 'button'
 			});
 		}, Error, 'Cannot resolve to an element with selector');
 

@@ -80,11 +80,6 @@ export interface DispatchOptions {
 	 * dispatch the event to
 	 */
 	selector?: string;
-
-	/**
-	 * The element to dispatch the event to
-	 */
-	target: Element;
 }
 
 export interface EventInitializer {
@@ -96,13 +91,12 @@ export interface EventInitializer {
  * @param type The event type to dispatch
  * @param options A map of options to configure the event
  */
-export default function dispatchEvent(type: string, options: DispatchOptions) {
+export default function dispatchEvent(target: Element, type: string, options?: DispatchOptions) {
 	const {
 		eventClass = 'CustomEvent',
 		eventInit = {},
-		selector,
-		target
-	} = options;
+		selector = ''
+	} = options || {};
 	let event: Event;
 	if (has('customevent-constructor')) {
 		if (eventClass in window) {
