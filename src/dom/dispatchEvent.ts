@@ -83,7 +83,7 @@ export interface DispatchOptions {
 }
 
 export interface EventInitializer {
-	(bubbles: boolean, cancelable: boolean): void;
+	(type: string, bubbles: boolean, cancelable: boolean): void;
 }
 
 /**
@@ -109,7 +109,7 @@ export default function dispatchEvent(target: Element, type: string, options?: D
 	else {
 		event = document.createEvent(eventClass);
 		const { bubbles = false, cancelable = false, ...initProps } = eventInit;
-		((<any> event)[`init${eventClass}`] as EventInitializer)(bubbles, cancelable);
+		((<any> event)[`init${eventClass}`] as EventInitializer)(type, bubbles, cancelable);
 		assign(event, initProps);
 	}
 	if (selector) {
