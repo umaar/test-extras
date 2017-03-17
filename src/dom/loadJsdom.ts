@@ -48,5 +48,3 @@ global.requestAnimationFrame = (cb: (...args: any[]) => {}) => {
 global.cancelAnimationFrame = () => {};
 
 export default doc;
-
-console.log('Loaded jsdom.');
