@@ -138,7 +138,7 @@ export default function sendEvent<I extends EventInit>(target: Element, type: st
 				value: (<any> initProps).target,
 				writable: false,
 				enumerable: true,
-				configurable: true
+				configurable: false
 			});
 		}
 		deepAssign(event, initProps);
